@@ -1,3 +1,11 @@
 <resources>
     <string name="app_name">BSharp</string>
+
+    <string name="recordTitle">Audio Message</string>
+    <string name="recordStr">Record</string>
+    <string name="playRecStr">Play</string>
+    <string name="stopRecStr">Stop</string>
+
+    <string name="err">Error</string>
+    <string name="audio_del">Audio file deleted.</string>
 </resources>
