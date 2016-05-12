@@ -1,44 +1,32 @@
 package com.okd.bsharp;
 
-import android.content.Context;
+import android.content.Intent;
 import android.media.AudioFormat;
-import android.media.AudioManager;
 import android.media.AudioRecord;
-import android.media.AudioTrack;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
-import android.os.Environment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Environment;
+import android.speech.RecognizerIntent;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    public int sampleRate = 44100;
 
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//
-//        // construct AudioRecord to record audio from microphone with sample rate of 44100Hz
-//        int minSize = AudioRecord.getMinBufferSize(sampleRate,AudioFormat.
-//                                               CHANNEL_CONFIGURATION_MONO,
-//                                               AudioFormat.ENCODING_PCM_16BIT);
-//        AudioRecord audioInput = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate,
-//                                                 AudioFormat.CHANNEL_CONFIGURATION_MONO,
-//                                                 AudioFormat.ENCODING_PCM_16BIT,
-//                                                 minSize);
-//    }
+    private static final int VOICE_RECOGNITION = 1;
+    Button speakButton ;
+    TextView spokenWords;
+    public int sampleRate = 44100;
 
     private MediaRecorder mediaRecorder = null;
     private MediaPlayer mediaPlayer = null;
@@ -47,158 +35,69 @@ public class MainActivity extends AppCompatActivity {
     private boolean recorded = false;
     protected String outputFile = null;
 
-    private static final String LOG_TAG = "AudioRecordTest";
-    private static String mFileName = null;
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-    private RecordButton mRecordButton = null;
-    private MediaRecorder mRecorder = null;
+        // construct AudioRecord to record audio from microphone with sample rate of 44100Hz
+        int minSize = AudioRecord.getMinBufferSize(sampleRate,AudioFormat.
+                                               CHANNEL_CONFIGURATION_MONO,
+                                               AudioFormat.ENCODING_PCM_16BIT);
+        AudioRecord audioInput = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate,
+                                                 AudioFormat.CHANNEL_CONFIGURATION_MONO,
+                                                 AudioFormat.ENCODING_PCM_16BIT,
+                                                 minSize);
 
-    private PlayButton   mPlayButton = null;
-    private MediaPlayer mPlayer = null;
+        speakButton = (Button) findViewById(R.id.start_reg);
+        spokenWords = (TextView)findViewById(R.id.speech);
 
-    private void onRecord(boolean start) {
-        if (start) {
-            startRecording();
-        } else {
-            stopRecording();
-        }
-    }
-
-    private void onPlay(boolean start) {
-        if (start) {
-            startPlaying();
-        } else {
-            stopPlaying();
-        }
-    }
-
-    private void startPlaying() {
-        mPlayer = new MediaPlayer();
-        try {
-            mPlayer.setDataSource(mFileName);
-            mPlayer.prepare();
-            mPlayer.start();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-    }
-
-    private void stopPlaying() {
-        mPlayer.release();
-        mPlayer = null;
-    }
-
-    private void startRecording() {
-        mRecorder = new MediaRecorder();
-        mRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mRecorder.setOutputFile(mFileName);
-        mRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-
-        try {
-            mRecorder.prepare();
-        } catch (IOException e) {
-            Log.e(LOG_TAG, "prepare() failed");
-        }
-
-        mRecorder.start();
-    }
-
-    private void stopRecording() {
-        mRecorder.stop();
-        mRecorder.release();
-        mRecorder = null;
-    }
-
-    class RecordButton extends Button {
-        boolean mStartRecording = true;
-
-        OnClickListener clicker = new OnClickListener() {
-            public void onClick(View v) {
-                onRecord(mStartRecording);
-                if (mStartRecording) {
-                    setText("Stop recording");
-                } else {
-                    setText("Start recording");
-                }
-                mStartRecording = !mStartRecording;
-            }
-        };
-
-        public RecordButton(Context ctx) {
-            super(ctx);
-            setText("Start recording");
-            setOnClickListener(clicker);
-        }
-    }
-
-    class PlayButton extends Button {
-        boolean mStartPlaying = true;
-
-        OnClickListener clicker = new OnClickListener() {
-            public void onClick(View v) {
-                onPlay(mStartPlaying);
-                if (mStartPlaying) {
-                    setText("Stop playing");
-                } else {
-                    setText("Start playing");
-                }
-                mStartPlaying = !mStartPlaying;
-            }
-        };
-
-        public PlayButton(Context ctx) {
-            super(ctx);
-            setText("Start playing");
-            setOnClickListener(clicker);
-        }
-    }
-
-    public MainActivity() {
-        mFileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        mFileName += "/audiorecordtest.3gp";
     }
 
     @Override
-    public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
+    protected void onActivityResult(int requestCode,
+                                    int resultCode,
+                                    Intent data) {
+        if (requestCode == VOICE_RECOGNITION && resultCode == RESULT_OK) {
+            ArrayList<String> matches = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+            String result = "";
+            for(String string : matches){
+                if("chord".equals(string)) result = string;
+            }
+            spokenWords.setText(result);
+        }
+        super.onActivityResult(requestCode, resultCode, data);
+    }
 
-        LinearLayout ll = new LinearLayout(this);
-        mRecordButton = new RecordButton(this);
-        ll.addView(mRecordButton,
-                new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        0));
-        mPlayButton = new PlayButton(this);
-        ll.addView(mPlayButton,
-                new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        ViewGroup.LayoutParams.WRAP_CONTENT,
-                        0));
-        setContentView(ll);
+    public void btnSpeak(View view){
+        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        // Specify free form input
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
+                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_PROMPT,"Please start speaking");
+        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 1);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
+        startActivityForResult(intent, VOICE_RECOGNITION);
     }
 
     @Override
-    public void onPause() {
+    protected void onPause(){
         super.onPause();
-        if (mRecorder != null) {
-            mRecorder.release();
-            mRecorder = null;
+        if (mediaRecorder != null) {
+            mediaRecorder.release();
+            mediaRecorder = null;
         }
 
-        if (mPlayer != null) {
-            mPlayer.release();
-            mPlayer = null;
+        if (mediaPlayer != null) {
+            mediaPlayer.release();
+            mediaPlayer = null;
         }
     }
-
-
 
     public void record(View view){
         if(!recording){
-            outputFile = getFilesDir().getAbsolutePath() + "/audio_message.3gpp";
-            //outputFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/audio_message.3gpp";
+//            outputFile = getFilesDir().getAbsolutePath() + "/audio_message.3gpp";
+            outputFile = Environment.getExternalStorageDirectory().getAbsolutePath() + "/audio_message.3gpp";
             mediaRecorder = new MediaRecorder();
             mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
@@ -256,6 +155,5 @@ public class MainActivity extends AppCompatActivity {
             Toast.makeText(getApplicationContext(),getString(R.string.audio_del),Toast.LENGTH_SHORT).show();
         }else Toast.makeText(getApplicationContext(),getString(R.string.err), Toast.LENGTH_SHORT).show();
     }
-
 
 }
