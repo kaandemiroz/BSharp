@@ -1,6 +1,10 @@
 package com.okd.bsharp;
 
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
@@ -9,19 +13,26 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
-
 
     private static final int VOICE_RECOGNITION = 1;
     Button speakButton ;
@@ -35,24 +46,24 @@ public class MainActivity extends AppCompatActivity {
     private boolean recorded = false;
     protected String outputFile = null;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        // construct AudioRecord to record audio from microphone with sample rate of 44100Hz
-        int minSize = AudioRecord.getMinBufferSize(sampleRate,AudioFormat.
-                                               CHANNEL_CONFIGURATION_MONO,
-                                               AudioFormat.ENCODING_PCM_16BIT);
-        AudioRecord audioInput = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate,
-                                                 AudioFormat.CHANNEL_CONFIGURATION_MONO,
-                                                 AudioFormat.ENCODING_PCM_16BIT,
-                                                 minSize);
-
-        speakButton = (Button) findViewById(R.id.start_reg);
-        spokenWords = (TextView)findViewById(R.id.speech);
-
-    }
+//    @Override
+//    protected void onCreate(Bundle savedInstanceState) {
+//        super.onCreate(savedInstanceState);
+//        setContentView(R.layout.activity_main);
+//
+//        // construct AudioRecord to record audio from microphone with sample rate of 44100Hz
+//        int minSize = AudioRecord.getMinBufferSize(sampleRate,AudioFormat.
+//                                               CHANNEL_CONFIGURATION_MONO,
+//                                               AudioFormat.ENCODING_PCM_16BIT);
+//        AudioRecord audioInput = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate,
+//                                                 AudioFormat.CHANNEL_CONFIGURATION_MONO,
+//                                                 AudioFormat.ENCODING_PCM_16BIT,
+//                                                 minSize);
+//
+//        speakButton = (Button) findViewById(R.id.start_reg);
+//        spokenWords = (TextView)findViewById(R.id.speech);
+//
+//    }
 
     @Override
     protected void onActivityResult(int requestCode,
@@ -154,6 +165,160 @@ public class MainActivity extends AppCompatActivity {
             outputFile = null;
             Toast.makeText(getApplicationContext(),getString(R.string.audio_del),Toast.LENGTH_SHORT).show();
         }else Toast.makeText(getApplicationContext(),getString(R.string.err), Toast.LENGTH_SHORT).show();
+    }
+
+    public static final String TAG = "RealGuitarTuner";
+
+
+    private ImageView guitar = null;
+    private ImageView tune = null;
+    private SoundAnalyzer soundAnalyzer = null ;
+    private TextView mainMessage = null;
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        Log.d(TAG,"onCreate()");
+        setContentView(R.layout.main);
+        UiController uiController = new UiController(MainActivity.this);
+        try {
+            soundAnalyzer = new SoundAnalyzer();
+        } catch(Exception e) {
+            Toast.makeText(this, "There are problems with your microphone", Toast.LENGTH_LONG ).show();
+            Log.e(TAG, "Exception when instantiating SoundAnalyzer: " + e.getMessage());
+        }
+        soundAnalyzer.addObserver(uiController);
+        guitar = (ImageView)findViewById(R.id.guitar);
+        tune = (ImageView)findViewById(R.id.tune);
+        mainMessage = (TextView)findViewById(R.id.mainMessage);
+
+        Spinner tuningSelector = (Spinner) findViewById(R.id.tuningSelector);
+        Tuning.populateSpinner(this, tuningSelector);
+        tuningSelector.setOnItemSelectedListener(uiController);
+    }
+
+    private Map<Integer, Bitmap> preloadedImages;
+    private BitmapFactory.Options bitmapOptions;
+
+    private Bitmap getAndCacheBitmap(int id) {
+        if(preloadedImages == null)
+            preloadedImages = new HashMap<>();
+        Bitmap ret = preloadedImages.get(id);
+        if(ret == null) {
+            if(bitmapOptions == null) {
+                BitmapFactory.Options options=new BitmapFactory.Options();
+                options.inSampleSize = 4; // The higher it goes, the smaller the image.
+            }
+            ret = BitmapFactory.decodeResource(getResources(), id, bitmapOptions);
+            preloadedImages.put(id, ret);
+        }
+        return ret;
+    }
+
+    public void dumpArray(final double [] inputArray, final int elements) {
+        Log.d(TAG, "Starting File writer thread...");
+        final double [] array = new double[elements];
+        System.arraycopy(inputArray, 0, array, 0, elements);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try { // catches IOException below
+                    // Location: /data/data/your_project_package_structure/files/samplefile.txt
+                    String name = "Chart_" + (int)(Math.random()*1000) + ".data";
+                    FileOutputStream fOut = openFileOutput(name,
+                            Context.MODE_WORLD_READABLE);
+                    OutputStreamWriter osw = new OutputStreamWriter(fOut);
+
+                    // Write the string to the file
+                    for(int i=0; i<elements; ++i)
+                        osw.write("" + array[i] + "\n");
+					/* ensure that everything is
+					 * really written out and close */
+                    osw.flush();
+                    osw.close();
+                    Log.d(TAG, "Successfully dumped array in file " + name);
+                } catch(Exception e) {
+                    Log.e(TAG,e.getMessage());
+                }
+            }
+        }).start();
+    }
+
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+        if(ConfigFlags.menuKeyCausesAudioDataDump) {
+            if (keyCode == KeyEvent.KEYCODE_MENU) {
+                Log.d(TAG,"Menu button pressed");
+                Log.d(TAG,"Requesting audio data dump");
+                soundAnalyzer.dumpAudioDataRequest();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private int [] stringNumberToImageId = new int[]{
+            R.drawable.strings0,
+            R.drawable.strings1,
+            R.drawable.strings2,
+            R.drawable.strings3,
+            R.drawable.strings4,
+            R.drawable.strings5,
+            R.drawable.strings6
+    };
+
+
+
+
+    int oldString = 0;
+    // 1-6 strings (ascending frequency), 0 - no string.
+    public void changeString(int stringId) {
+        if(oldString!=stringId) {
+            guitar.setImageBitmap(getAndCacheBitmap(stringNumberToImageId[stringId]));
+            oldString=stringId;
+        }
+    }
+
+    int [] targetColor =         new int[]{160,80,40};
+    int [] awayFromTargetColor = new int[]{160,160,160};
+
+
+    public void coloredGuitarMatch(double match) {
+        tune.setBackgroundColor(
+                Color.rgb((int)(match*targetColor[0]+ (1-match)*awayFromTargetColor[0]),
+                        (int)(match*targetColor[1]+ (1-match)*awayFromTargetColor[1]),
+                        (int)(match*targetColor[2]+ (1-match)*awayFromTargetColor[2])));
+
+    }
+
+    public void displayMessage(String msg, boolean positiveFeedback) {
+        int textColor = positiveFeedback ? Color.rgb(34,139,34) : Color.rgb(255,36,0);
+        mainMessage.setText(msg);
+        mainMessage.setTextColor(textColor);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG,"onResume()");
+        if(soundAnalyzer!=null)
+            soundAnalyzer.ensureStarted();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Log.d(TAG,"onStart()");
+        if(soundAnalyzer!=null)
+            soundAnalyzer.start();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG,"onStop()");
+        if(soundAnalyzer!=null)
+            soundAnalyzer.stop();
     }
 
 }

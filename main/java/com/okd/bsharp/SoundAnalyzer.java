@@ -32,11 +32,10 @@ public class SoundAnalyzer extends Observable implements AudioRecord.OnRecordPos
     private static final double maxStDevOfMeanFrequency = 2.0; // if stdev bigger than that
     private static final double MaxPossibleFrequency = 2700.0;     // result considered rubbish
     private static final double loudnessThreshold = 30.0; // below is too quiet
-    private static final double PercentOfWavelenghSamplesToBeIgnored = 0.2;
+    private static final double PercentOfWavelengthSamplesToBeIgnored = 0.2;
 
 
     private AudioRecord audioRecord;
-    private int bufferSize;
     private final CircularBuffer audioData;
     private short [] audioDataTemp;
 
@@ -58,7 +57,7 @@ public class SoundAnalyzer extends Observable implements AudioRecord.OnRecordPos
             ZERO_SAMPLES,
             BIG_VARIANCE,
             BIG_FREQUENCY
-        };
+        }
         public double loudness;
         public boolean frequencyAvailable;
         public double frequency;
@@ -80,7 +79,7 @@ public class SoundAnalyzer extends Observable implements AudioRecord.OnRecordPos
             else if(error==ReadingType.ZERO_SAMPLES)
                 Log.d(TAG,"Zero Samples (no wavelength established).");
             else if(error==ReadingType.BIG_VARIANCE)
-                Log.d(TAG,"Variance on wavelengh too big.");
+                Log.d(TAG,"Variance on wavelength too big.");
             else if(error==ReadingType.TOO_QUIET)
                 Log.d(TAG,"Sound too quiet");
             else if(error==ReadingType.BIG_FREQUENCY)
@@ -102,11 +101,10 @@ public class SoundAnalyzer extends Observable implements AudioRecord.OnRecordPos
 
     public SoundAnalyzer() throws Exception {
         // Setting up AudioRecord class.
-        bufferSize =
-                AudioRecord.getMinBufferSize(44100,
-                        AudioFormat.CHANNEL_IN_MONO,
-                        AudioFormat.ENCODING_PCM_16BIT)
-                        * 2;
+        int bufferSize = AudioRecord.getMinBufferSize(44100,
+                AudioFormat.CHANNEL_IN_MONO,
+                AudioFormat.ENCODING_PCM_16BIT)
+                * 2;
 
         audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC,
                 AUDIO_SAMPLING_RATE,
@@ -339,15 +337,15 @@ public class SoundAnalyzer extends Observable implements AudioRecord.OnRecordPos
 
     void removeFalseSamples() {
         int samplesToBeIgnored =
-                (int)(PercentOfWavelenghSamplesToBeIgnored*wavelengths);
+                (int)(PercentOfWavelengthSamplesToBeIgnored*wavelengths);
         if(wavelengths <=2) return;
         do {
             double mean = getMeanWavelength();
             // Looking for sample furthest away from mean.
             int best = -1;
             for(int i=0; i<wavelengths; ++i)
-                if(best == -1 || Math.abs((double)wavelength[i]-mean) >
-                        Math.abs((double)wavelength[best]-mean)) best = i;
+                if(best == -1 || Math.abs(wavelength[i] -mean) >
+                        Math.abs(wavelength[best] -mean)) best = i;
             // Removing it.
             wavelength[best]=wavelength[wavelengths-1];
             --wavelengths;

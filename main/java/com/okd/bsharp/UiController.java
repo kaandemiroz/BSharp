@@ -15,7 +15,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 public class UiController implements Observer, OnItemSelectedListener {
 	public static final String TAG = "RealGuitarTuner";
 
-	private SimpleGuitarTunerActivity ui;
+	private MainActivity ui;
 	private double frequency;
 	private Tuning tuning = new Tuning(0);
 	
@@ -32,7 +32,7 @@ public class UiController implements Observer, OnItemSelectedListener {
 	private int numberOfVotes;
 	private final int minNumberOfVotes = 3; // X.
 	
-	public UiController(SimpleGuitarTunerActivity u) {
+	public UiController(MainActivity u) {
 		ui = u;
 	}
 	
@@ -42,7 +42,7 @@ public class UiController implements Observer, OnItemSelectedListener {
 			if(obj instanceof AnalyzedSound) {
 				AnalyzedSound result = (AnalyzedSound)obj;
 				// result.getDebug();
-				frequency = FrequencySmoothener.getSmoothFrequency(result);
+				frequency = FrequencySmoother.getSmoothFrequency(result);
 				if(result.error==AnalyzedSound.ReadingType.BIG_FREQUENCY ||
 						result.error==AnalyzedSound.ReadingType.BIG_VARIANCE ||
 						result.error==AnalyzedSound.ReadingType.ZERO_SAMPLES)
@@ -55,7 +55,7 @@ public class UiController implements Observer, OnItemSelectedListener {
 					Log.e(TAG, "UiController: Unknown class of message.");
 					proposedMessage=null;
 				}
-				if(ConfigFlags.uiControlerInformsWhatItKnowsAboutSound)
+				if(ConfigFlags.uiControllerInformsWhatItKnowsAboutSound)
 					result.getDebug();
 				//Log.e(TAG,"Frequency: " + frequency);
 				updateUi();

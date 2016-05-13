@@ -2,7 +2,7 @@ package com.okd.bsharp;
 
 import com.okd.bsharp.SoundAnalyzer.AnalyzedSound;
 
-public class FrequencySmoothener {
+public class FrequencySmoother {
 	static final double frequencyForgetting = 0.9; // how fast forget frequency
 	static final int invalidDataAllowed = 6; // if this many uncertain data sets, assume frequency
 	                                   // not available.
