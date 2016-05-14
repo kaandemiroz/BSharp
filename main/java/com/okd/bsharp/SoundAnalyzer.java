@@ -73,25 +73,10 @@ public class SoundAnalyzer extends Observable implements AudioRecord.OnRecordPos
             frequency = f;
             error = ReadingType.NO_PROBLEMS;
         }
-        public void getDebug() {
-            if(error==ReadingType.NO_PROBLEMS)
-                Log.d(TAG,"OK(" + frequency +")");
-            else if(error==ReadingType.ZERO_SAMPLES)
-                Log.d(TAG,"Zero Samples (no wavelength established).");
-            else if(error==ReadingType.BIG_VARIANCE)
-                Log.d(TAG,"Variance on wavelength too big.");
-            else if(error==ReadingType.TOO_QUIET)
-                Log.d(TAG,"Sound too quiet");
-            else if(error==ReadingType.BIG_FREQUENCY)
-                Log.d(TAG,"Frequency bigger than " + MaxPossibleFrequency);
-            else  Log.e(TAG, "WTF - unknown AnalyzedSound message");
-        }
 
     }
 
     private void onNotifyRateChanged() {
-        if(Math.random() < ConfigFlags.howOftenLogNotifyRate)
-            Log.d(TAG, "Notify rate: " + notifyRateinS);
         if(audioRecord.setPositionNotificationPeriod(
                 (int)(notifyRateinS*AUDIO_SAMPLING_RATE)) !=
                 AudioRecord.SUCCESS) {
@@ -194,13 +179,6 @@ public class SoundAnalyzer extends Observable implements AudioRecord.OnRecordPos
 
     private AnalyzedSound analyzisResult;
 
-
-    boolean dumpAudioData = false;
-
-    public void dumpAudioDataRequest() {
-        dumpAudioData = true;
-    }
-
     public class ArrayToDump {
         public double [] arr;
         int elements;
@@ -208,11 +186,6 @@ public class SoundAnalyzer extends Observable implements AudioRecord.OnRecordPos
             arr = a;
             elements = e;
         }
-    }
-
-    private void dumpAudioDataExecute() {
-        setChanged();
-        notifyObservers(new ArrayToDump(audioDataAnalysis, elementsRead));
     }
 
     // This is the periodic notification of AudioRecord listener.
@@ -225,8 +198,6 @@ public class SoundAnalyzer extends Observable implements AudioRecord.OnRecordPos
                 if(!analyzingData.tryLock()) {
                     notifyRateinS=Math.min(notifyRateinS + 0.01, minNotifyRate);
                     onNotifyRateChanged();
-                    if(ConfigFlags.shouldLogAnalyzisTooSlow)
-                        Log.d(TAG, "Analyzing algorithm is too slow. Dropping sample");
                     return;
                 } else {
                     notifyRateinS=Math.max(notifyRateinS - 0.001, maxNotifyRate);
@@ -234,11 +205,6 @@ public class SoundAnalyzer extends Observable implements AudioRecord.OnRecordPos
                 }
                 analyzisResult = getFrequency();
                 // Make sure we dump audioDataAfter analyzis.
-                if(dumpAudioData) {
-                    dumpAudioDataExecute();
-                    dumpAudioData = false;
-                    Log.d(TAG, "finished dumping.");
-                }
                 analyzingData.unlock();
                 setChanged();
                 // Log.e(TAG,"notified");

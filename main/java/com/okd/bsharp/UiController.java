@@ -55,8 +55,6 @@ public class UiController implements Observer, OnItemSelectedListener {
 					Log.e(TAG, "UiController: Unknown class of message.");
 					proposedMessage=null;
 				}
-				if(ConfigFlags.uiControllerInformsWhatItKnowsAboutSound)
-					result.getDebug();
 				//Log.e(TAG,"Frequency: " + frequency);
 				updateUi();
 			} else if(obj instanceof ArrayToDump) {

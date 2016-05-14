@@ -14,7 +14,6 @@ import android.os.Environment;
 import android.speech.RecognizerIntent;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -46,24 +45,50 @@ public class MainActivity extends AppCompatActivity {
     private boolean recorded = false;
     protected String outputFile = null;
 
-//    @Override
-//    protected void onCreate(Bundle savedInstanceState) {
-//        super.onCreate(savedInstanceState);
-//        setContentView(R.layout.activity_main);
-//
-//        // construct AudioRecord to record audio from microphone with sample rate of 44100Hz
-//        int minSize = AudioRecord.getMinBufferSize(sampleRate,AudioFormat.
-//                                               CHANNEL_CONFIGURATION_MONO,
-//                                               AudioFormat.ENCODING_PCM_16BIT);
-//        AudioRecord audioInput = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate,
-//                                                 AudioFormat.CHANNEL_CONFIGURATION_MONO,
-//                                                 AudioFormat.ENCODING_PCM_16BIT,
-//                                                 minSize);
-//
-//        speakButton = (Button) findViewById(R.id.start_reg);
-//        spokenWords = (TextView)findViewById(R.id.speech);
-//
-//    }
+    public static final String TAG = "BSharp";
+
+    private ImageView guitar = null;
+    private ImageView tune = null;
+    private SoundAnalyzer soundAnalyzer = null ;
+    private TextView mainMessage = null;
+
+    private Map<Integer, Bitmap> preloadedImages;
+    private BitmapFactory.Options bitmapOptions;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        // construct AudioRecord to record audio from microphone with sample rate of 44100Hz
+        int minSize = AudioRecord.getMinBufferSize(sampleRate,AudioFormat.
+                                               CHANNEL_CONFIGURATION_MONO,
+                                               AudioFormat.ENCODING_PCM_16BIT);
+        AudioRecord audioInput = new AudioRecord(MediaRecorder.AudioSource.MIC, sampleRate,
+                                                 AudioFormat.CHANNEL_CONFIGURATION_MONO,
+                                                 AudioFormat.ENCODING_PCM_16BIT,
+                                                 minSize);
+
+        speakButton = (Button) findViewById(R.id.start_reg);
+        spokenWords = (TextView)findViewById(R.id.speech);
+
+
+        UiController uiController = new UiController(MainActivity.this);
+        try {
+            soundAnalyzer = new SoundAnalyzer();
+        } catch(Exception e) {
+            Toast.makeText(this, "There are problems with your microphone", Toast.LENGTH_LONG ).show();
+            Log.e(TAG, "Exception when instantiating SoundAnalyzer: " + e.getMessage());
+        }
+        soundAnalyzer.addObserver(uiController);
+        guitar = (ImageView)findViewById(R.id.guitar);
+        tune = (ImageView)findViewById(R.id.tune);
+        mainMessage = (TextView)findViewById(R.id.mainMessage);
+
+        Spinner tuningSelector = (Spinner) findViewById(R.id.tuningSelector);
+        Tuning.populateSpinner(this, tuningSelector);
+        tuningSelector.setOnItemSelectedListener(uiController);
+    }
 
     @Override
     protected void onActivityResult(int requestCode,
@@ -167,40 +192,6 @@ public class MainActivity extends AppCompatActivity {
         }else Toast.makeText(getApplicationContext(),getString(R.string.err), Toast.LENGTH_SHORT).show();
     }
 
-    public static final String TAG = "RealGuitarTuner";
-
-
-    private ImageView guitar = null;
-    private ImageView tune = null;
-    private SoundAnalyzer soundAnalyzer = null ;
-    private TextView mainMessage = null;
-
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Log.d(TAG,"onCreate()");
-        setContentView(R.layout.main);
-        UiController uiController = new UiController(MainActivity.this);
-        try {
-            soundAnalyzer = new SoundAnalyzer();
-        } catch(Exception e) {
-            Toast.makeText(this, "There are problems with your microphone", Toast.LENGTH_LONG ).show();
-            Log.e(TAG, "Exception when instantiating SoundAnalyzer: " + e.getMessage());
-        }
-        soundAnalyzer.addObserver(uiController);
-        guitar = (ImageView)findViewById(R.id.guitar);
-        tune = (ImageView)findViewById(R.id.tune);
-        mainMessage = (TextView)findViewById(R.id.mainMessage);
-
-        Spinner tuningSelector = (Spinner) findViewById(R.id.tuningSelector);
-        Tuning.populateSpinner(this, tuningSelector);
-        tuningSelector.setOnItemSelectedListener(uiController);
-    }
-
-    private Map<Integer, Bitmap> preloadedImages;
-    private BitmapFactory.Options bitmapOptions;
-
     private Bitmap getAndCacheBitmap(int id) {
         if(preloadedImages == null)
             preloadedImages = new HashMap<>();
@@ -245,18 +236,6 @@ public class MainActivity extends AppCompatActivity {
         }).start();
     }
 
-    public boolean onKeyUp(int keyCode, KeyEvent event) {
-        if(ConfigFlags.menuKeyCausesAudioDataDump) {
-            if (keyCode == KeyEvent.KEYCODE_MENU) {
-                Log.d(TAG,"Menu button pressed");
-                Log.d(TAG,"Requesting audio data dump");
-                soundAnalyzer.dumpAudioDataRequest();
-                return true;
-            }
-        }
-        return false;
-    }
-
     private int [] stringNumberToImageId = new int[]{
             R.drawable.strings0,
             R.drawable.strings1,
@@ -266,9 +245,6 @@ public class MainActivity extends AppCompatActivity {
             R.drawable.strings5,
             R.drawable.strings6
     };
-
-
-
 
     int oldString = 0;
     // 1-6 strings (ascending frequency), 0 - no string.
@@ -300,25 +276,19 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG,"onResume()");
-        if(soundAnalyzer!=null)
-            soundAnalyzer.ensureStarted();
+        if(soundAnalyzer!=null) soundAnalyzer.ensureStarted();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG,"onStart()");
-        if(soundAnalyzer!=null)
-            soundAnalyzer.start();
+        if(soundAnalyzer!=null) soundAnalyzer.start();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        Log.d(TAG,"onStop()");
-        if(soundAnalyzer!=null)
-            soundAnalyzer.stop();
+        if(soundAnalyzer!=null) soundAnalyzer.stop();
     }
 
 }
