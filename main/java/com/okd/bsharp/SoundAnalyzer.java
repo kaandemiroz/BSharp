@@ -177,7 +177,7 @@ public class SoundAnalyzer extends Observable implements AudioRecord.OnRecordPos
         // This should never happen.
     }
 
-    private AnalyzedSound analyzisResult;
+    private AnalyzedSound analysisResult;
 
     public class ArrayToDump {
         public double [] arr;
@@ -191,7 +191,7 @@ public class SoundAnalyzer extends Observable implements AudioRecord.OnRecordPos
     // This is the periodic notification of AudioRecord listener.
     @Override
     public void onPeriodicNotification(AudioRecord recorder) {
-        notifyObservers(analyzisResult);
+        notifyObservers(analysisResult);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -203,8 +203,8 @@ public class SoundAnalyzer extends Observable implements AudioRecord.OnRecordPos
                     notifyRateinS=Math.max(notifyRateinS - 0.001, maxNotifyRate);
                     onNotifyRateChanged();
                 }
-                analyzisResult = getFrequency();
-                // Make sure we dump audioDataAfter analyzis.
+                analysisResult = getFrequency();
+                // Make sure we dump audioDataAfter analysis.
                 analyzingData.unlock();
                 setChanged();
                 // Log.e(TAG,"notified");

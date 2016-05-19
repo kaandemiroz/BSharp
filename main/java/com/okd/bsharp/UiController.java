@@ -13,7 +13,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 
 public class UiController implements Observer, OnItemSelectedListener {
-	public static final String TAG = "RealGuitarTuner";
+	public static final String TAG = "BSharp";
 
 	private MainActivity ui;
 	private double frequency;
@@ -82,7 +82,7 @@ public class UiController implements Observer, OnItemSelectedListener {
 				match = (current.maxFreq - frequency )/(current.maxFreq-current.freq);
 			}
 		}
-		ui.coloredGuitarMatch(Math.pow(match, 1.5));
+//		ui.coloredGuitarMatch(Math.pow(match, 1.5));
 		
 		// Update message. 
 		// If cannot decide on a string
@@ -120,6 +120,7 @@ public class UiController implements Observer, OnItemSelectedListener {
 			default:
 				Log.d(TAG, "No message");
 		}
+		ui.displayMessage(frequency + "",false);
 	}
 
 	@Override

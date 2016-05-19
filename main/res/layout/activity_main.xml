@@ -11,53 +11,13 @@
     android:gravity="center"
     tools:context="com.okd.bsharp.MainActivity">
 
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/recordTitle"
-            android:layout_gravity="center_vertical"/>
-
-        <Space
-            android:layout_width="10dp"
-            android:layout_height="0dp" />
-
-        <ImageButton
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:scaleType="fitCenter"
-            android:onClick="record"
-            android:src="@drawable/rec"
-            android:contentDescription="@string/recordStr" />
-
-        <ImageButton
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:scaleType="fitCenter"
-            android:onClick="play"
-            android:src="@drawable/play"
-            android:contentDescription="@string/playRecStr"/>
-
-        <ImageButton
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:scaleType="fitCenter"
-            android:src="@drawable/bin"
-            android:contentDescription="@string/delete"
-            android:onClick="deleteAudio"/>
-
-    </LinearLayout>
-
-    <Button
-        android:id="@+id/start_reg"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:onClick="btnSpeak"
-        android:text="Start Speech Recognition" />
+    <!--<Button-->
+        <!--android:id="@+id/start_reg"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center"-->
+        <!--android:onClick="btnSpeak"-->
+        <!--android:text="Start Speech Recognition" />-->
 
     <TextView
         android:id="@+id/speech"
@@ -66,57 +26,21 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center" />
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="#343434"
-        android:orientation="vertical" >
+    <TextView
+        android:id="@+id/mainMessage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text=" "
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
-        <TextView
-            android:id="@+id/mainMessage"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:text=" "
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-        <RelativeLayout
-            android:id="@+id/relativeLayout1"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent" >
-
-            <ImageView
-                android:id="@+id/tune"
-                android:contentDescription="@string/tuningPlane"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:adjustViewBounds="true"
-                android:scaleType="fitXY"
-                android:src="@drawable/tune_horizontal" />
-
-            <Spinner
-                android:id="@+id/tuningSelector"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentRight="true" />
-
-            <ImageView
-                android:id="@+id/guitar"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/tuningSelector"
-                android:layout_alignParentLeft="true"
-                android:layout_below="@+id/tune"
-                android:adjustViewBounds="true"
-                android:scaleType="fitXY"
-                android:src="@drawable/strings0" />
-
-        </RelativeLayout>
-
-    </LinearLayout>
+    <Spinner
+        android:id="@+id/tuningSelector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true" />
 
 
 </LinearLayout>
