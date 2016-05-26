@@ -19,12 +19,12 @@
         <!--android:onClick="btnSpeak"-->
         <!--android:text="Start Speech Recognition" />-->
 
-    <TextView
-        android:id="@+id/speech"
-        android:textSize="25sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center" />
+    <!--<TextView-->
+        <!--android:id="@+id/speech"-->
+        <!--android:textSize="25sp"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_gravity="center" />-->
 
     <TextView
         android:id="@+id/mainMessage"
@@ -34,13 +34,18 @@
         android:text=" "
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <Spinner
-        android:id="@+id/tuningSelector"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentRight="true" />
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:inputType="textMultiLine" />
+
+    <!--<Spinner-->
+        <!--android:id="@+id/tuningSelector"-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignParentLeft="true"-->
+        <!--android:layout_alignParentRight="true" />-->
 
 
 </LinearLayout>

@@ -11,6 +11,7 @@ import android.widget.Toast;
 
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
+import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity{//} implements RecognitionListener{
 
@@ -21,6 +22,7 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
     private SoundAnalyzer soundAnalyzer = null ;
     private TextView mainMessage = null;
 
+    private ArrayList<Integer> history;
     private double[] frequencies = {82.4, 87.3, 92.5, 98.0, 103.8,
                                     110.0, 116.5, 123.5, 130.8, 138.6,
                                     146.8, 155.6, 164.8, 174.6, 185.0,
@@ -36,7 +38,8 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        spokenWords = (TextView) findViewById(R.id.speech);
+        history = new ArrayList<>(10);
+//        spokenWords = (TextView) findViewById(R.id.speech);
 
         UiController uiController = new UiController(MainActivity.this);
         try {
@@ -48,9 +51,9 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
         soundAnalyzer.addObserver(uiController);
         mainMessage = (TextView) findViewById(R.id.mainMessage);
 
-        Spinner tuningSelector = (Spinner) findViewById(R.id.tuningSelector);
-        Tuning.populateSpinner(this, tuningSelector);
-        tuningSelector.setOnItemSelectedListener(uiController);
+//        Spinner tuningSelector = (Spinner) findViewById(R.id.tuningSelector);
+//        Tuning.populateSpinner(this, tuningSelector);
+//        tuningSelector.setOnItemSelectedListener(uiController);
     }
 
     public void dumpArray(final double [] inputArray, final int elements) {
@@ -123,6 +126,33 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
     @Override
     public void onDestroy() {
         super.onDestroy();
+    }
+
+    private int findClosestNote(double freq, double[] frequencies){
+        double min = 100;
+        int index = -1;
+        for(int i=0; i<frequencies.length; i++){
+            double diff = Math.abs(freq - frequencies[i]);
+            if(diff < min){
+                min = diff;
+                index = i;
+            }
+        }
+        return index;
+    }
+
+    private double findPreviousArea(){
+        double totalWeight = 0;
+        double sum = 0;
+        for(int i=0; i<history.size(); i++){
+//            sum += history
+        }
+//        sum = history.
+        return sum;
+    }
+
+    private int findString(int note){
+        return note;
     }
 
 }

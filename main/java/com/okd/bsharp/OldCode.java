@@ -1,7 +1,7 @@
 package com.okd.bsharp;
 
-import edu.cmu.pocketsphinx.Decoder;
-import edu.cmu.pocketsphinx.SpeechRecognizer;
+//import edu.cmu.pocketsphinx.Decoder;
+//import edu.cmu.pocketsphinx.SpeechRecognizer;
 
 /**
  * Created by OKD on 20.5.2016.
@@ -9,8 +9,8 @@ import edu.cmu.pocketsphinx.SpeechRecognizer;
 public class OldCode {
 
     public int AUDIO_SAMPLING_RATE = 44100;
-    private SpeechRecognizer recognizer;
-    private Decoder decoder;
+//    private SpeechRecognizer recognizer;
+//    private Decoder decoder;
     private static final String CHORD_KEY = "chord";
 
 //    private IspikitWrapper ispikitWrapper;
