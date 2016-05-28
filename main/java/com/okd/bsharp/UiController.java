@@ -120,7 +120,7 @@ public class UiController implements Observer, OnItemSelectedListener {
 			default:
 				Log.d(TAG, "No message");
 		}
-		ui.displayMessage(frequency + "",false);
+		ui.displayMessage(frequency,false);
 	}
 
 	@Override

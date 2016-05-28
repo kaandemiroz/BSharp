@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -18,9 +19,13 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
     TextView spokenWords;
 
     public static final String TAG = "BSharp";
+    public static final int UNSET = -1;
 
     private SoundAnalyzer soundAnalyzer = null ;
     private TextView mainMessage = null;
+    private EditText editText = null;
+    private Tab tab = new Tab();
+    private int previousNote = UNSET;
 
     private ArrayList<Integer> history;
     private double[] frequencies = {82.4, 87.3, 92.5, 98.0, 103.8,
@@ -50,6 +55,7 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
         }
         soundAnalyzer.addObserver(uiController);
         mainMessage = (TextView) findViewById(R.id.mainMessage);
+        editText = (EditText) findViewById(R.id.editText);
 
 //        Spinner tuningSelector = (Spinner) findViewById(R.id.tuningSelector);
 //        Tuning.populateSpinner(this, tuningSelector);
@@ -93,6 +99,21 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
         }
     }
 
+    public void displayMessage(double freq, boolean positiveFeedback) {
+        int textColor = positiveFeedback ? Color.rgb(34,139,34) : Color.rgb(255,36,0);
+        int note = findClosestNote(freq, frequencies);
+        mainMessage.setText(freq + "\n" + note);
+        if(note != previousNote){
+            if(previousNote == UNSET){
+                tab.addColumn(findString(note),note);
+                editText.setText(tab.toString());
+                editText.setSelection(editText.getText().length());
+            }
+            previousNote = note;
+        }
+        mainMessage.setTextColor(textColor);
+    }
+
     public void displayMessage(String msg, boolean positiveFeedback) {
         int textColor = positiveFeedback ? Color.rgb(34,139,34) : Color.rgb(255,36,0);
         mainMessage.setText(msg);
@@ -130,7 +151,7 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
 
     private int findClosestNote(double freq, double[] frequencies){
         double min = 100;
-        int index = -1;
+        int index = UNSET;
         for(int i=0; i<frequencies.length; i++){
             double diff = Math.abs(freq - frequencies[i]);
             if(diff < min){
@@ -138,7 +159,8 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
                 index = i;
             }
         }
-        return index;
+        if(min < 10) return index;
+        else return UNSET;
     }
 
     private double findPreviousArea(){
@@ -152,7 +174,7 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
     }
 
     private int findString(int note){
-        return note;
+        return note % 6 + 1;
     }
 
 }
