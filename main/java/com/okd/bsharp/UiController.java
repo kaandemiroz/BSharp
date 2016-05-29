@@ -66,8 +66,6 @@ public class UiController implements Observer, OnItemSelectedListener {
 	
 	private void updateUi() {
 		GuitarString current = tuning.getString(frequency);
-		// Mark a string in red on a big picture of guitar.
-		ui.changeString(current.stringId);
 		
 		// Change color of your guitar.
 
@@ -103,23 +101,23 @@ public class UiController implements Observer, OnItemSelectedListener {
 				message = proposedMessage;
 			}
 		}
-		switch(message) {
-			case TUNING_IN_PROGRESS:
-				ui.displayMessage("Currently tuning string " + current.name +
-						" from " + tuning.getName() + " tuning, matched in " + 
-						Math.round(100.0*match) + "%.", true);
-				break;
-			case TOO_NOISY:
-				ui.displayMessage("Please reduce background noise (or play louder).", false);
-				break;
-			case TOO_QUIET:
-				ui.displayMessage("Please play louder!", false);
-				break;
-			case WEIRD_FREQUENCY:
-				ui.displayMessage("Are you sure instrument you are playing is guitar? :)", false);
-			default:
-				Log.d(TAG, "No message");
-		}
+//		switch(message) {
+////			case TUNING_IN_PROGRESS:
+////				ui.displayMessage("Currently tuning string " + current.name +
+////						" from " + tuning.getName() + " tuning, matched in " +
+////						Math.round(100.0*match) + "%.", true);
+////				break;
+//			case TOO_NOISY:
+//				ui.displayMessage("Please reduce background noise (or play louder).", false);
+//				break;
+//			case TOO_QUIET:
+//				ui.displayMessage("Please play louder!", false);
+//				break;
+//			case WEIRD_FREQUENCY:
+//				ui.displayMessage("Are you sure instrument you are playing is guitar? :)", false);
+//			default:
+//				Log.d(TAG, "No message");
+//		}
 		ui.displayMessage(frequency,false);
 	}
 

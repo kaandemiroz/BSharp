@@ -27,7 +27,7 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
     private Tab tab = new Tab();
     private int previousNote = UNSET;
 
-    private ArrayList<Integer> history;
+    private Queue history;
     private double[] frequencies = {82.4, 87.3, 92.5, 98.0, 103.8,
                                     110.0, 116.5, 123.5, 130.8, 138.6,
                                     146.8, 155.6, 164.8, 174.6, 185.0,
@@ -38,12 +38,14 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
                                     587.3, 622.2, 659.2, 698.5, 740.0,
                                     784.0, 830.6, 880.0, 932.3, 987.8, 1047};
 
+    private int[] stringOffsets = {-24, -19, -15, -10, -5, 0};
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        history = new ArrayList<>(10);
+        history = new Queue(5);
 //        spokenWords = (TextView) findViewById(R.id.speech);
 
         UiController uiController = new UiController(MainActivity.this);
@@ -91,21 +93,16 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
         }).start();
     }
 
-    int oldString = 0;
-    // 1-6 strings (ascending frequency), 0 - no string.
-    public void changeString(int stringId) {
-        if(oldString!=stringId) {
-            oldString=stringId;
-        }
-    }
-
     public void displayMessage(double freq, boolean positiveFeedback) {
         int textColor = positiveFeedback ? Color.rgb(34,139,34) : Color.rgb(255,36,0);
         int note = findClosestNote(freq, frequencies);
         mainMessage.setText(freq + "\n" + note);
         if(note != previousNote){
             if(previousNote == UNSET){
-                tab.addColumn(findString(note),note);
+                int stringIndex = findString(note);
+                int position = note + stringOffsets[stringIndex];
+                tab.addColumn(stringIndex, position);
+                history.addItem(position);
                 editText.setText(tab.toString());
                 editText.setSelection(editText.getText().length());
             }
@@ -164,17 +161,31 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
     }
 
     private double findPreviousArea(){
+        int[] curHistory = history.getArray();
         double totalWeight = 0;
         double sum = 0;
-        for(int i=0; i<history.size(); i++){
-//            sum += history
+        for(int i=0; i<curHistory.length; i++){
+            sum += curHistory[i];
         }
-//        sum = history.
+        sum /= curHistory.length;
         return sum;
     }
 
     private int findString(int note){
-        return note % 6 + 1;
+        double previousArea = findPreviousArea();
+        double min = 100;
+        int index = UNSET;
+        for(int i=0; i<stringOffsets.length; i++){
+            int offNote = note + stringOffsets[i];
+            if(offNote >= 0){
+                double diff = Math.abs(previousArea - offNote);
+                if(diff < min){
+                    min = diff;
+                    index = i;
+                }
+            }
+        }
+        return index;
     }
 
 }

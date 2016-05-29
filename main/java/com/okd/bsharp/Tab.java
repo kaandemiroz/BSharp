@@ -27,7 +27,7 @@ public class Tab {
 
     public void addColumn(int string, int note){
         for(int i=0; i<strings.length; i++){
-            if(i==string-1){
+            if(i==string){
                 if(note / 10 > 0)
                     strings[i] += note + " -";
                 else
