@@ -17,12 +17,12 @@ public class Tab {
     }
 
     private void initStrings(){
-        strings[0] = "E—";
-        strings[1] = "B—";
-        strings[2] = "G—";
-        strings[3] = "D—";
-        strings[4] = "A—";
-        strings[5] = "E—";
+        strings[0] = "E|—";
+        strings[1] = "B|—";
+        strings[2] = "G|—";
+        strings[3] = "D|—";
+        strings[4] = "A|—";
+        strings[5] = "E|—";
     }
 
     public void addColumn(int string, int note){

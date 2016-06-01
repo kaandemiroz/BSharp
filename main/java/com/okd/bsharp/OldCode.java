@@ -35,9 +35,9 @@ public class OldCode {
     // You must create new classes deriving from Handler, one for each callback.
     // In the handle message, method, you can update the activity's UI
 //    static class InitHandler extends Handler {
-//        WeakReference<MainActivity> m_Activity;
+//        WeakReference<TabActivity> m_Activity;
 //
-//        InitHandler(MainActivity a) {
+//        InitHandler(TabActivity a) {
 //            m_Activity = new WeakReference<>(a);
 //        }
 //
@@ -45,7 +45,7 @@ public class OldCode {
 //        public void handleMessage(Message message) {
 //            // After you get this, the library is now usable, you can update the app's
 //            // UI to reflect it and allow users to start recording.
-//            MainActivity a = m_Activity.get();
+//            TabActivity a = m_Activity.get();
 //            Toast.makeText(a, "Initialization Done", Toast.LENGTH_LONG).show();
 //            a.ispikitWrapper.SetSentence("Dummy " + CHORD_KEY + " single");
 //            a.ispikitWrapper.Start();
@@ -53,9 +53,9 @@ public class OldCode {
 //    }
 //
 //    static class WordsHandler extends Handler {
-//        WeakReference<MainActivity> m_Activity;
+//        WeakReference<TabActivity> m_Activity;
 //
-//        WordsHandler(MainActivity a) {
+//        WordsHandler(TabActivity a) {
 //            m_Activity = new WeakReference<>(a);
 //        }
 //
@@ -64,7 +64,7 @@ public class OldCode {
 //            // You can parse the string to detect if the last word is recognized.
 //            // If the last word is recognized, you can stop recognition calling
 //            // m_simple_ispikit_wrapper.StopRecording(false);
-//            MainActivity a = m_Activity.get();
+//            TabActivity a = m_Activity.get();
 //            TextView words = (TextView) a.findViewById(R.id.speech);
 ////            words.setText((String) message.obj);
 //            if("0-1-0-0".equals( message.obj))
@@ -73,9 +73,9 @@ public class OldCode {
 //    }
 //
 //    static class AudioHandler extends Handler {
-//        WeakReference<MainActivity> m_Activity;
+//        WeakReference<TabActivity> m_Activity;
 //
-//        AudioHandler(MainActivity a) {
+//        AudioHandler(TabActivity a) {
 //            m_Activity = new WeakReference<>(a);
 //        }
 //
@@ -83,7 +83,7 @@ public class OldCode {
 //        public void handleMessage(Message message) {
 //            // You can wire this to a ProgressBar to show completion to
 //            // the user.
-//            MainActivity a = m_Activity.get();
+//            TabActivity a = m_Activity.get();
 //            TextView pitch = (TextView) a.findViewById(R.id.speech);
 //            pitch.setText(TextUtils.join(",", (Object[]) message.obj));
 ////            Toast.makeText(a, TextUtils.join(",", (Object[]) message.obj), Toast.LENGTH_SHORT).show();
@@ -105,7 +105,7 @@ public class OldCode {
 //            @Override
 //            protected Exception doInBackground(Void... params) {
 //                try {
-//                    Assets assets = new Assets(MainActivity.this);
+//                    Assets assets = new Assets(TabActivity.this);
 //                    File assetDir = assets.syncAssets();
 //                    setupRecognizer(assetDir);
 //                } catch (IOException e) {

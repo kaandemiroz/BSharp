@@ -3,27 +3,37 @@ package com.okd.bsharp;
 import android.content.Context;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.widget.EditText;
-import android.widget.Spinner;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
-import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity{//} implements RecognitionListener{
+public class TabActivity extends AppCompatActivity{//} implements RecognitionListener{
 
     TextView spokenWords;
 
     public static final String TAG = "BSharp";
     public static final int UNSET = -1;
 
+    private Toolbar mToolbar;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+    private TabFragment fragment;
+
     private SoundAnalyzer soundAnalyzer = null ;
     private TextView mainMessage = null;
-    private EditText editText = null;
+    private TextView editText = null;
     private Tab tab = new Tab();
     private int previousNote = UNSET;
 
@@ -43,12 +53,62 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_tab);
+
+        mToolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,
+                mDrawerLayout,
+                mToolbar,
+                R.string.drawer_open_desc,
+                R.string.drawer_close_desc);
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+
+        ActionBar supportActionBar = getSupportActionBar();
+        if(supportActionBar!=null){
+            supportActionBar.setHomeButtonEnabled(true);
+            supportActionBar.setDisplayHomeAsUpEnabled(true);
+        }
+
+        NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
+        Menu navigationMenu = navigationView.getMenu();
+        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(MenuItem menuItem) {
+                mDrawerLayout.closeDrawers();
+
+                FragmentManager fragmentManager = TabActivity.this.getSupportFragmentManager();
+                TabFragment feedListFragment = (TabFragment) fragmentManager
+                        .findFragmentById(R.id.fragment_container);
+                String fragmentName = menuItem.getTitle().toString();
+                mToolbar.setTitle(fragmentName);
+//                feedListFragment.setContent(nameToIDMap.get(fragmentName), 0, true);
+
+                return true;
+            }
+        });
+
+        if (findViewById(R.id.fragment_container) != null) {
+            // If we're being restored from a previous state,
+            // then we don't need to do anything and should return or else
+            // we could end up with overlapping fragments.
+            if (savedInstanceState != null) return;
+            fragment = new TabFragment();
+
+            // In case this activity was started with special instructions from an
+            // Intent, pass the Intent's extras to the fragment as arguments
+            fragment.setArguments(getIntent().getExtras());
+
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, fragment).commit();
+        }
 
         history = new Queue(5);
 //        spokenWords = (TextView) findViewById(R.id.speech);
 
-        UiController uiController = new UiController(MainActivity.this);
+        UiController uiController = new UiController(TabActivity.this);
         try {
             soundAnalyzer = new SoundAnalyzer();
         } catch (Exception e) {
@@ -57,11 +117,20 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
         }
         soundAnalyzer.addObserver(uiController);
         mainMessage = (TextView) findViewById(R.id.mainMessage);
-        editText = (EditText) findViewById(R.id.editText);
+        editText = (TextView) findViewById(R.id.editText);
 
 //        Spinner tuningSelector = (Spinner) findViewById(R.id.tuningSelector);
 //        Tuning.populateSpinner(this, tuningSelector);
 //        tuningSelector.setOnItemSelectedListener(uiController);
+    }
+
+    @Override
+    /**
+     * Sync the Drawer Toggle after onCreate
+     */
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
     }
 
     public void dumpArray(final double [] inputArray, final int elements) {
@@ -102,9 +171,9 @@ public class MainActivity extends AppCompatActivity{//} implements RecognitionLi
                 int stringIndex = findString(note);
                 int position = note + stringOffsets[stringIndex];
                 tab.addColumn(stringIndex, position);
+                fragment.addTabItem(stringIndex, position);
                 history.addItem(position);
-                editText.setText(tab.toString());
-                editText.setSelection(editText.getText().length());
+//                editText.setText(tab.toString());
             }
             previousNote = note;
         }

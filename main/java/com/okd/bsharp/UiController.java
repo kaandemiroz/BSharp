@@ -15,7 +15,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 public class UiController implements Observer, OnItemSelectedListener {
 	public static final String TAG = "BSharp";
 
-	private MainActivity ui;
+	private TabActivity ui;
 	private double frequency;
 	private Tuning tuning = new Tuning(0);
 	
@@ -32,7 +32,7 @@ public class UiController implements Observer, OnItemSelectedListener {
 	private int numberOfVotes;
 	private final int minNumberOfVotes = 3; // X.
 	
-	public UiController(MainActivity u) {
+	public UiController(TabActivity u) {
 		ui = u;
 	}
 	

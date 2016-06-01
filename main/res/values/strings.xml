@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">BSharp</string>
+    <string name="drawer_open_desc">Open Menu</string>
+    <string name="drawer_close_desc">Close Menu</string>
 
     <string name="recordTitle">Audio Message</string>
     <string name="recordStr">Record</string>
@@ -11,4 +13,7 @@
     <string name="delete">Delete</string>
 
     <string name="tuningPlane">Tuning Plane</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
