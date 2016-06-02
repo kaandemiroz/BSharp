@@ -19,9 +19,7 @@ import android.widget.Toast;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 
-public class TabActivity extends AppCompatActivity{//} implements RecognitionListener{
-
-    TextView spokenWords;
+public class TabActivity extends AppCompatActivity{
 
     public static final String TAG = "BSharp";
     public static final int UNSET = -1;
@@ -33,8 +31,6 @@ public class TabActivity extends AppCompatActivity{//} implements RecognitionLis
 
     private SoundAnalyzer soundAnalyzer = null ;
     private TextView mainMessage = null;
-    private TextView editText = null;
-    private Tab tab = new Tab();
     private int previousNote = UNSET;
 
     private Queue history;
@@ -106,7 +102,6 @@ public class TabActivity extends AppCompatActivity{//} implements RecognitionLis
         }
 
         history = new Queue(5);
-//        spokenWords = (TextView) findViewById(R.id.speech);
 
         UiController uiController = new UiController(TabActivity.this);
         try {
@@ -117,11 +112,6 @@ public class TabActivity extends AppCompatActivity{//} implements RecognitionLis
         }
         soundAnalyzer.addObserver(uiController);
         mainMessage = (TextView) findViewById(R.id.mainMessage);
-        editText = (TextView) findViewById(R.id.editText);
-
-//        Spinner tuningSelector = (Spinner) findViewById(R.id.tuningSelector);
-//        Tuning.populateSpinner(this, tuningSelector);
-//        tuningSelector.setOnItemSelectedListener(uiController);
     }
 
     @Override
@@ -170,10 +160,8 @@ public class TabActivity extends AppCompatActivity{//} implements RecognitionLis
             if(previousNote == UNSET){
                 int stringIndex = findString(note);
                 int position = note + stringOffsets[stringIndex];
-                tab.addColumn(stringIndex, position);
                 fragment.addTabItem(stringIndex, position);
                 history.addItem(position);
-//                editText.setText(tab.toString());
             }
             previousNote = note;
         }
@@ -184,12 +172,6 @@ public class TabActivity extends AppCompatActivity{//} implements RecognitionLis
         int textColor = positiveFeedback ? Color.rgb(34,139,34) : Color.rgb(255,36,0);
         mainMessage.setText(msg);
         mainMessage.setTextColor(textColor);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-//        ispikitWrapper.Stop(true);
     }
 
     @Override
@@ -208,11 +190,6 @@ public class TabActivity extends AppCompatActivity{//} implements RecognitionLis
     protected void onStop() {
         super.onStop();
         if(soundAnalyzer!=null) soundAnalyzer.stop();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
     }
 
     private int findClosestNote(double freq, double[] frequencies){

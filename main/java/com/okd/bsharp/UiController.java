@@ -1,27 +1,22 @@
 package com.okd.bsharp;
 
+import android.util.Log;
+
+import com.okd.bsharp.SoundAnalyzer.AnalyzedSound;
+import com.okd.bsharp.SoundAnalyzer.ArrayToDump;
+
 import java.util.Observable;
 import java.util.Observer;
 
-import com.okd.bsharp.SoundAnalyzer.*;
-import com.okd.bsharp.Tuning.GuitarString;
 
-import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
-
-
-public class UiController implements Observer, OnItemSelectedListener {
+public class UiController implements Observer {
 	public static final String TAG = "BSharp";
 
 	private TabActivity ui;
 	private double frequency;
-	private Tuning tuning = new Tuning(0);
 	
 	private enum MessageClass {
 		TUNING_IN_PROGRESS,
-		WEIRD_FREQUENCY,
 		TOO_QUIET,
 		TOO_NOISY,
 	}
@@ -65,27 +60,6 @@ public class UiController implements Observer, OnItemSelectedListener {
 	}
 	
 	private void updateUi() {
-		GuitarString current = tuning.getString(frequency);
-		
-		// Change color of your guitar.
-
-		double match = 0.0; // How close is current frequency to the desired 
-		                    // frequency in 0..1 scale.
-		if(current.stringId == 0) {
-			match = 0.0;
-		} else {
-			if(frequency<current.freq) {
-				match = (frequency-current.minFreq)/(current.freq-current.minFreq);
-			} else {
-				match = (current.maxFreq - frequency )/(current.maxFreq-current.freq);
-			}
-		}
-//		ui.coloredGuitarMatch(Math.pow(match, 1.5));
-		
-		// Update message. 
-		// If cannot decide on a string
-		if(proposedMessage == MessageClass.TUNING_IN_PROGRESS && current.stringId == 0)
-			proposedMessage = MessageClass.WEIRD_FREQUENCY;
 		if(message == null) {
 			message = previouslyProposedMessage = proposedMessage;
 		} if(message == proposedMessage) {
@@ -119,19 +93,6 @@ public class UiController implements Observer, OnItemSelectedListener {
 //				Log.d(TAG, "No message");
 //		}
 		ui.displayMessage(frequency,false);
-	}
-
-	@Override
-	public void onItemSelected(AdapterView<?> parent, View thing, int itemno,
-			long rowno) {
-		if(tuning.getTuningId() != itemno)
-			tuning = new Tuning(itemno);
-		Log.d(TAG,"Changed tuning to " + tuning.getName());
-	}
-
-	@Override
-	public void onNothingSelected(AdapterView<?> parent) {
-		// do nothing
 	}
 	
 

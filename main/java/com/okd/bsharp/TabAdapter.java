@@ -2,6 +2,11 @@ package com.okd.bsharp;
 
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.support.v7.widget.RecyclerView.Adapter;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
+import android.text.method.KeyListener;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +41,12 @@ public class TabAdapter extends Adapter<TabItemHolder> {
         notifyDataSetChanged();
     }
 
+    public void updateList(){
+        for(TabItem tabItem : list){
+            tabItem.s
+        }
+    }
+
     /**
      * Called when RecyclerView needs a new {@link ViewHolder} of the given type to represent
      * an item.
@@ -47,7 +58,7 @@ public class TabAdapter extends Adapter<TabItemHolder> {
      * The new ViewHolder will be used to display items of the adapter using
      * {@link #onBindViewHolder(ViewHolder, int, List)}. Since it will be re-used to display
      * different items in the data set, it is a good idea to cache references to sub views of
-     * the View to avoid unnecessary {@link View#findViewById(int)} calls.
+     * the View     to avoid unnecessary {@link View#findViewById(int)} calls.
      *
      * @param parent   The ViewGroup into which the new View will be added after it is bound to
      *                 an adapter position.
@@ -103,27 +114,36 @@ public class TabAdapter extends Adapter<TabItemHolder> {
 class TabItemHolder extends ViewHolder implements View.OnClickListener{
 
     private TabItem tabItem;
-    private EditText string1;
-    private EditText string2;
-    private EditText string3;
-    private EditText string4;
-    private EditText string5;
-    private EditText string6;
+    private TextView string1;
+    private TextView string2;
+    private TextView string3;
+    private TextView string4;
+    private TextView string5;
+    private TextView string6;
 
     public TabItemHolder(View itemView) {
         super(itemView);
-        string1 = (EditText) itemView.findViewById(R.id.string1);
-        string2 = (EditText) itemView.findViewById(R.id.string2);
-        string3 = (EditText) itemView.findViewById(R.id.string3);
-        string4 = (EditText) itemView.findViewById(R.id.string4);
-        string5 = (EditText) itemView.findViewById(R.id.string5);
-        string6 = (EditText) itemView.findViewById(R.id.string6);
+        string1 = (TextView) itemView.findViewById(R.id.string1);
+        string2 = (TextView) itemView.findViewById(R.id.string2);
+        string3 = (TextView) itemView.findViewById(R.id.string3);
+        string4 = (TextView) itemView.findViewById(R.id.string4);
+        string5 = (TextView) itemView.findViewById(R.id.string5);
+        string6 = (TextView) itemView.findViewById(R.id.string6);
         string1.setOnClickListener(this);
         string2.setOnClickListener(this);
         string3.setOnClickListener(this);
         string4.setOnClickListener(this);
         string5.setOnClickListener(this);
         string6.setOnClickListener(this);
+    }
+
+    public void setUneditable(){
+        string1.setKeyListener(null);
+        string2.setKeyListener(null);
+        string3.setKeyListener(null);
+        string4.setKeyListener(null);
+        string5.setKeyListener(null);
+        string6.setKeyListener(null);
     }
 
     public void bindTabItem(TabItem tabItem){
@@ -140,4 +160,14 @@ class TabItemHolder extends ViewHolder implements View.OnClickListener{
     public void onClick(View view) {
         Toast.makeText(view.getContext(),"Click",Toast.LENGTH_SHORT).show();
     }
+
+    public void updateStrings(){
+        tabItem.setString1(string1.getText().toString());
+        tabItem.setString2(string2.getText().toString());
+        tabItem.setString3(string3.getText().toString());
+        tabItem.setString4(string4.getText().toString());
+        tabItem.setString5(string5.getText().toString());
+        tabItem.setString6(string6.getText().toString());
+    }
+
 }

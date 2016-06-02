@@ -7,6 +7,9 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 
 public class TabFragment extends Fragment {
@@ -19,6 +22,12 @@ public class TabFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_tab, container, false);
 
+        LinearLayout tabArea = (LinearLayout) rootView.findViewById(R.id.tab_area);
+        View view = LayoutInflater.from(container.getContext()).inflate(R.layout.item_tab, container, false);
+        TabItemHolder holder = new TabItemHolder(view);
+        holder.bindTabItem(new TabItem("E","B","G","D","A","E"));
+//        holder.setUneditable();
+        tabArea.addView(view,0);
         mRecyclerView = (RecyclerView) rootView.findViewById(R.id.recycler_view);
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(rootView.getContext());
@@ -44,7 +53,6 @@ public class TabFragment extends Fragment {
                 super.onScrolled(recyclerView, dx, dy);
             }
         });
-        mTabAdapter.addTabItem(new TabItem("E","B","G","D","A","E"));
 
         return rootView;
     }

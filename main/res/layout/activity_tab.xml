@@ -31,21 +31,6 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
-            <!--<Button-->
-            <!--android:id="@+id/start_reg"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center"-->
-            <!--android:onClick="btnSpeak"-->
-            <!--android:text="Start Speech Recognition" />-->
-
-            <!--<TextView-->
-            <!--android:id="@+id/speech"-->
-            <!--android:textSize="25sp"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center" />-->
-
             <TextView
                 android:id="@+id/mainMessage"
                 android:layout_width="match_parent"
@@ -53,21 +38,6 @@
                 android:gravity="center"
                 android:text=" "
                 android:textAppearance="?android:attr/textAppearanceMedium" />
-
-            <TextView
-                android:id="@+id/editText"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:scrollbars="vertical"
-                android:gravity="top" />
-
-            <!--<Spinner-->
-            <!--android:id="@+id/tuningSelector"-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_alignParentBottom="true"-->
-            <!--android:layout_alignParentLeft="true"-->
-            <!--android:layout_alignParentRight="true" />-->
 
             <FrameLayout
                 android:id="@+id/fragment_container"
@@ -80,8 +50,8 @@
             android:id="@+id/navigation_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="start"/>
-        <!--app:headerLayout="@layout/drawer_header"-->
+            android:layout_gravity="start"
+            app:headerLayout="@layout/drawer_header"/>
         <!--app:menu="@menu/menu_navigation"-->
 
     </android.support.v4.widget.DrawerLayout>

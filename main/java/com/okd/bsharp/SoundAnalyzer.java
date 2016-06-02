@@ -268,23 +268,6 @@ public class SoundAnalyzer extends Observable implements AudioRecord.OnRecordPos
             audioDataAnalysis[i]=0;
     }
 
-    // Maybe will use it at some point
-    void shoothOutAudioData() {
-        double averageDistance = 0.0;
-        for(int i=1; i<elementsRead; ++i)
-            averageDistance += Math.abs(audioDataAnalysis[i]- audioDataAnalysis[i-1]);
-        averageDistance/=elementsRead-1;
-
-        int lastGoodPosition = 0;
-        for(int i=1; i<elementsRead; ++i) {
-            if(Math.abs(audioDataAnalysis[i]- audioDataAnalysis[lastGoodPosition]) <=
-                    2*averageDistance) {
-                audioDataAnalysis[++lastGoodPosition] = audioDataAnalysis[i];
-            }
-        }
-        elementsRead = lastGoodPosition+1;
-    }
-
     double getMeanWavelength() {
         double mean = 0;
         for(int i=0; i < wavelengths; ++i)
