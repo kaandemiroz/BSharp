@@ -35,7 +35,21 @@ public class Tab {
             }
             else strings[i] += "——";
         }
-        if(strings[0].length() > 20){
+        if(strings[0].length() > 250){
+            String line = "";
+            for(int i=0; i<strings.length; i++){
+                line += strings[i] + "\n";
+            }
+            lines.add(line);
+            initStrings();
+        }
+    }
+
+    public void addColumn(String[] stringArray){
+        for(int i=0; i<strings.length; i++){
+            strings[i] += stringArray[i] + "\t";
+        }
+        if(strings[0].length() > 250){
             String line = "";
             for(int i=0; i<strings.length; i++){
                 line += strings[i] + "\n";

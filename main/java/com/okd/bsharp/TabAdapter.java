@@ -1,12 +1,10 @@
 package com.okd.bsharp;
 
-import android.support.v7.widget.RecyclerView.ViewHolder;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView.Adapter;
-import android.text.Editable;
+import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.text.InputType;
-import android.text.TextWatcher;
-import android.text.method.KeyListener;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,8 +12,6 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,8 +23,8 @@ public class TabAdapter extends Adapter<TabItemHolder> {
 
     private ArrayList<TabItem> list;
 
-    public TabAdapter(){
-        list = new ArrayList<>();
+    public TabAdapter(ArrayList list){
+        this.list = list;
     }
 
     public void addTabItem(TabItem tabItem){
@@ -39,12 +35,6 @@ public class TabAdapter extends Adapter<TabItemHolder> {
     public void clear(){
         list.clear();
         notifyDataSetChanged();
-    }
-
-    public void updateList(){
-        for(TabItem tabItem : list){
-            tabItem.s
-        }
     }
 
     /**
@@ -129,21 +119,18 @@ class TabItemHolder extends ViewHolder implements View.OnClickListener{
         string4 = (TextView) itemView.findViewById(R.id.string4);
         string5 = (TextView) itemView.findViewById(R.id.string5);
         string6 = (TextView) itemView.findViewById(R.id.string6);
+        string1.setTag(1);
+        string2.setTag(2);
+        string3.setTag(3);
+        string4.setTag(4);
+        string5.setTag(5);
+        string6.setTag(6);
         string1.setOnClickListener(this);
         string2.setOnClickListener(this);
         string3.setOnClickListener(this);
         string4.setOnClickListener(this);
         string5.setOnClickListener(this);
         string6.setOnClickListener(this);
-    }
-
-    public void setUneditable(){
-        string1.setKeyListener(null);
-        string2.setKeyListener(null);
-        string3.setKeyListener(null);
-        string4.setKeyListener(null);
-        string5.setKeyListener(null);
-        string6.setKeyListener(null);
     }
 
     public void bindTabItem(TabItem tabItem){
@@ -157,17 +144,52 @@ class TabItemHolder extends ViewHolder implements View.OnClickListener{
     }
 
     @Override
-    public void onClick(View view) {
-        Toast.makeText(view.getContext(),"Click",Toast.LENGTH_SHORT).show();
-    }
+    public void onClick(final View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+        builder.setTitle("Enter note:");
 
-    public void updateStrings(){
-        tabItem.setString1(string1.getText().toString());
-        tabItem.setString2(string2.getText().toString());
-        tabItem.setString3(string3.getText().toString());
-        tabItem.setString4(string4.getText().toString());
-        tabItem.setString5(string5.getText().toString());
-        tabItem.setString6(string6.getText().toString());
+        // Set up the input
+        final EditText input = new EditText(view.getContext());
+        // Specify the type of input expected;
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String inputString = input.getText().toString();
+                switch ((Integer) view.getTag()){
+                    case 1:
+                        tabItem.setString1(inputString);
+                        break;
+                    case 2:
+                        tabItem.setString2(inputString);
+                        break;
+                    case 3:
+                        tabItem.setString3(inputString);
+                        break;
+                    case 4:
+                        tabItem.setString4(inputString);
+                        break;
+                    case 5:
+                        tabItem.setString5(inputString);
+                        break;
+                    case 6:
+                        tabItem.setString6(inputString);
+                        break;
+                }
+                bindTabItem(tabItem);
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 
 }

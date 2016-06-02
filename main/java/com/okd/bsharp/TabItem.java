@@ -109,4 +109,8 @@ public class TabItem {
     public void setString6(String string6) {
         this.string6 = string6;
     }
+
+    public String[] getStrings(){
+        return new String[]{string1, string2, string3, string4, string5, string6};
+    }
 }
