@@ -68,6 +68,10 @@ public class TabFragment extends Fragment {
         mRecyclerView.smoothScrollToPosition(mTabAdapter.getItemCount());
     }
 
+    public void deleteTab(){
+        mTabAdapter.clear();
+    }
+
     public Tab getTab(){
         Tab tab = new Tab();
         for(int i=0; i<tabItems.size(); i++){
@@ -75,6 +79,14 @@ public class TabFragment extends Fragment {
             tab.addColumn(tabItem.getStrings());
         }
         return tab;
+    }
+
+    public String getTabItems(){
+        String result = "";
+        for(int i=0; i<tabItems.size(); i++){
+            result += tabItems.get(i).toString();
+        }
+        return result;
     }
 
 }

@@ -45,15 +45,45 @@
                 android:layout_height="0dp"
                 android:layout_weight="1"/>
 
-            <ImageButton
-                android:id="@+id/record"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:scaleType="fitCenter"
-                android:onClick="record"
-                android:src="@drawable/rec"
-                android:contentDescription="@string/recordStr" />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageButton
+                    android:id="@+id/delete"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="15dp"
+                    android:layout_centerVertical="true"
+                    android:scaleType="fitCenter"
+                    android:onClick="delete"
+                    android:src="@drawable/bin"
+                    android:contentDescription="@string/delete"/>
+
+                <ImageButton
+                    android:id="@+id/record"
+                    android:layout_width="90dp"
+                    android:layout_height= "90dp"
+                    android:layout_centerInParent="true"
+                    android:scaleType="fitCenter"
+                    android:onClick="record"
+                    android:src="@drawable/rec"
+                    android:contentDescription="@string/recordStr" />
+
+                <ImageButton
+                    android:id="@+id/save"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="15dp"
+                    android:layout_centerVertical="true"
+                    android:scaleType="fitCenter"
+                    android:onClick="save"
+                    android:src="@drawable/save"
+                    android:contentDescription="@string/save"/>
+
+            </RelativeLayout>
 
         </LinearLayout>
 

@@ -54,7 +54,7 @@ public class UiController implements Observer {
 				updateUi();
 			} else if(obj instanceof ArrayToDump) {
 				ArrayToDump a = (ArrayToDump)obj;
-				ui.dumpArray(a.arr, a.elements);
+//				ui.dumpArray(a.arr, a.elements);
 			}
 		}
 	}

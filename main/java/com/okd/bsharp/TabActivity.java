@@ -1,27 +1,26 @@
 package com.okd.bsharp;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.graphics.Color;
-import android.graphics.pdf.PdfDocument;
-import android.graphics.pdf.PdfDocument.*;
-import android.media.Image;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.design.widget.NavigationView;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itextpdf.text.Document;
@@ -30,11 +29,9 @@ import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.StringTokenizer;
 
 public class TabActivity extends AppCompatActivity{
 
@@ -87,40 +84,42 @@ public class TabActivity extends AppCompatActivity{
             supportActionBar.setDisplayHomeAsUpEnabled(true);
         }
 
+        if (findViewById(R.id.fragment_container) != null) {
+            if (savedInstanceState != null) return;
+            fragment = new TabFragment();
+            fragment.setArguments(getIntent().getExtras());
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, fragment).commit();
+        }
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.navigation_view);
         Menu navigationMenu = navigationView.getMenu();
+        SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+        final String song = sharedPreferences.getString("song","");
+        if(!"".equals(song)){
+            StringTokenizer stringTokenizer = new StringTokenizer(song);
+            String songName = stringTokenizer.nextToken(":");
+            navigationMenu.add(Menu.NONE,Menu.NONE,0,songName);
+        }
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
                 mDrawerLayout.closeDrawers();
-
-                FragmentManager fragmentManager = TabActivity.this.getSupportFragmentManager();
-                TabFragment feedListFragment = (TabFragment) fragmentManager
-                        .findFragmentById(R.id.fragment_container);
-                String fragmentName = menuItem.getTitle().toString();
-                mToolbar.setTitle(fragmentName);
-//                feedListFragment.setContent(nameToIDMap.get(fragmentName), 0, true);
+//                StringTokenizer stringTokenizer = new StringTokenizer(song);
+//                String songName = stringTokenizer.nextToken(":");
+//                while(stringTokenizer.hasMoreTokens()){
+//                    String column = stringTokenizer.nextToken(";");
+//                    StringTokenizer tokenizer = new StringTokenizer(column,",");
+//                    while (tokenizer.hasMoreTokens())){
+//
+//                    }
+//                }
 
                 return true;
             }
         });
 
         recordButton = (ImageButton) findViewById(R.id.record);
-
-        if (findViewById(R.id.fragment_container) != null) {
-            // If we're being restored from a previous state,
-            // then we don't need to do anything and should return or else
-            // we could end up with overlapping fragments.
-            if (savedInstanceState != null) return;
-            fragment = new TabFragment();
-
-            // In case this activity was started with special instructions from an
-            // Intent, pass the Intent's extras to the fragment as arguments
-            fragment.setArguments(getIntent().getExtras());
-
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.fragment_container, fragment).commit();
-        }
 
         history = new Queue(5);
 
@@ -142,35 +141,6 @@ public class TabActivity extends AppCompatActivity{
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
-    }
-
-    public void dumpArray(final double [] inputArray, final int elements) {
-        Log.d(TAG, "Starting File writer thread...");
-        final double [] array = new double[elements];
-        System.arraycopy(inputArray, 0, array, 0, elements);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try { // catches IOException below
-                    // Location: /data/data/your_project_package_structure/files/samplefile.txt
-                    String name = "Chart_" + (int)(Math.random()*1000) + ".data";
-                    FileOutputStream fOut = openFileOutput(name,
-                            Context.MODE_WORLD_READABLE);
-                    OutputStreamWriter osw = new OutputStreamWriter(fOut);
-
-                    // Write the string to the file
-                    for(int i=0; i<elements; ++i)
-                        osw.write("" + array[i] + "\n");
-					/* ensure that everything is
-					 * really written out and close */
-                    osw.flush();
-                    osw.close();
-                    Log.d(TAG, "Successfully dumped array in file " + name);
-                } catch(Exception e) {
-                    Log.e(TAG,e.getMessage());
-                }
-            }
-        }).start();
     }
 
     public void displayMessage(double freq, boolean positiveFeedback) {
@@ -211,6 +181,42 @@ public class TabActivity extends AppCompatActivity{
         }
     }
 
+    public void delete(View view){
+        fragment.deleteTab();
+    }
+
+    public void save(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(view.getContext());
+        builder.setTitle("Enter the name of the song:");
+
+        // Set up the input
+        final EditText input = new EditText(view.getContext());
+        // Specify the type of input expected;
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        // Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String inputString = input.getText().toString();
+                SharedPreferences sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+//                editor.clear();
+                editor.putString("song",inputString + ":" + fragment.getTabItems());
+                editor.commit();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
+    }
+
     @Override
     protected void onStop() {
         super.onStop();
@@ -239,7 +245,6 @@ public class TabActivity extends AppCompatActivity{
 
     private double findPreviousArea(){
         int[] curHistory = history.getArray();
-        double totalWeight = 0;
         double sum = 0;
         for(int i=0; i<curHistory.length; i++){
             sum += curHistory[i];
@@ -274,62 +279,21 @@ public class TabActivity extends AppCompatActivity{
             SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyyhhmmss");
             String pdfName = TAG + sdf.format(Calendar.getInstance().getTime()) + ".pdf";
             File dir = new File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), TAG);
+            // Create the storage directory if it does not exist
+            if (! dir.exists()){
+                if (! dir.mkdirs()){
+                    Log.d(TAG, "failed to create directory");
+                }
+            }
             PdfWriter.getInstance(document,
                     new FileOutputStream(dir.getPath() + File.separator + pdfName));
             document.open();
 
             document.add(new Paragraph(tab.toString()));
             document.close();
+            Toast.makeText(this,"PDF file created at \"DOWNLOAD\".", Toast.LENGTH_SHORT).show();
         } catch(Exception e){
             e.printStackTrace();
         }
-//        // Create a object of PdfDocument
-//        PdfDocument document = new PdfDocument();
-//
-//        // content view is EditText for my case in which user enters pdf content
-//        TextView content = new TextView(this);
-//        content.setText(tab.toString());
-//
-//        // crate a page info with attributes as below
-//        // page number, height and width
-//        // i have used height and width to that of pdf content view
-//        PageInfo pageInfo = new PageInfo.Builder(300,300, 1).create();
-//
-//        // create a new page from the PageInfo
-//        Page page = document.startPage(pageInfo);
-//
-//        // repaint the user's text into the page
-//        content.draw(page.getCanvas());
-//
-//        // do final processing of the page
-//        document.finishPage(page);
-//
-//        // saving pdf document to sdcard
-//        SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyyhhmmss");
-//        String pdfName = TAG
-//                + sdf.format(Calendar.getInstance().getTime()) + ".pdf";
-//
-//        File dir = new File(Environment.getExternalStoragePublicDirectory(
-//                Environment.DIRECTORY_DOCUMENTS), TAG);
-//
-//        // Create the storage directory if it does not exist
-//        if (! dir.exists()){
-//            if (! dir.mkdirs()){
-//                Log.d(TAG, "failed to create directory");
-//            }
-//        }
-//
-//        // all created files will be saved at path /sdcard/PDFDemo_AndroidSRC/
-//        File outputFile = new File(dir.getPath() + File.separator + pdfName);
-//
-//        try {
-//            outputFile.createNewFile();
-//            OutputStream out = new FileOutputStream(outputFile);
-//            document.writeTo(out);
-//            document.close();
-//            out.close();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
     }
 }

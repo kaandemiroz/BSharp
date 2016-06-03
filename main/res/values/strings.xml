@@ -12,6 +12,7 @@
     <string name="err">Error</string>
     <string name="audio_del">Audio file deleted.</string>
     <string name="delete">Delete</string>
+    <string name="save">Save</string>
 
     <string name="tuningPlane">Tuning Plane</string>
 

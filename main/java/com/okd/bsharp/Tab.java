@@ -47,9 +47,9 @@ public class Tab {
 
     public void addColumn(String[] stringArray){
         for(int i=0; i<strings.length; i++){
-            strings[i] += stringArray[i] + "\t";
+            strings[i] += " " + stringArray[i] + " ";
         }
-        if(strings[0].length() > 250){
+        if(strings[0].length() > 70){
             String line = "";
             for(int i=0; i<strings.length; i++){
                 line += strings[i] + "\n";
